@@ -1,0 +1,55 @@
+image: docker:latest
+
+stages:
+  - build
+  - release
+
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  IMAGE_NAME: "${CI_REGISTRY_IMAGE}"
+
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+build:
+  stage: build
+  services:
+    - docker:dind
+  only:
+    - merge_requests
+    - main
+  script:
+    - |
+      if [ "$CI_COMMIT_BRANCH" == "main" ]; then
+        TAG="latest"
+      else
+        TAG="mr-${CI_MERGE_REQUEST_IID}"
+      fi
+      
+      echo "Building image: ${IMAGE_NAME}:${TAG}"
+      docker build -t "${IMAGE_NAME}:${TAG}" .
+      
+      if [ "$CI_COMMIT_BRANCH" != "main" ]; then
+        echo "Pushing MR image for testing: ${IMAGE_NAME}:${TAG}"
+        docker push "${IMAGE_NAME}:${TAG}"
+      fi
+
+release:
+  stage: release
+  services:
+    - docker:dind
+  only:
+    - main
+  script:
+    - |
+      # Build and tag with commit SHA
+      docker build -t "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}" .
+      docker tag "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}" "${IMAGE_NAME}:latest"
+      
+      # Push both tags
+      docker push "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
+      docker push "${IMAGE_NAME}:latest"
+      
+      echo "Published images:"
+      echo "  - ${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
+      echo "  - ${IMAGE_NAME}:latest"

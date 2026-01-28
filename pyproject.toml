@@ -1,0 +1,28 @@
+[project]
+name = "argocd-applicationset-json-plugin"
+version = "0.1.0"
+description = "A generic ArgoCD ApplicationSet plugin that fetches JSON from a URL and applies JSONPath filtering"
+authors = [
+    {name = "cm", email = "cm@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "jsonpath-ng>=1.6.0",
+]
+
+[project.urls]
+Homepage = "https://gitlab.com/tezos-infra/iac/argocd-applicationset-json-plugin"
+Repository = "https://gitlab.com/tezos-infra/iac/argocd-applicationset-json-plugin"
+
+[tool.black]
+line-length = 120
+target-version = ['py311']
+
+[tool.isort]
+profile = "black"
+line_length = 120
+
+[tool.flake8]
+max-line-length = 120
+extend-ignore = ["E203", "W503"]
