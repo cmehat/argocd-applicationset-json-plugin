@@ -9,9 +9,9 @@ to generate parameters for ApplicationSet.
 import json
 import os
 import sys
+import subprocess
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.request import urlopen
-from jsonpath_ng.ext import parse
 
 # Token from mounted secret file
 try:
@@ -22,7 +22,7 @@ except FileNotFoundError:
 
 # Configuration from environment variables
 JSON_URL = os.getenv('JSON_URL', 'https://example.com/data.json')
-JSON_PATH = os.getenv('JSON_PATH', '$[*]')  # JSONPath filter expression
+JSON_FILTER = os.getenv('JSON_FILTER', '.')  # jq filter expression
 
 
 class JsonPlugin(BaseHTTPRequestHandler):
@@ -63,27 +63,34 @@ class JsonPlugin(BaseHTTPRequestHandler):
             try:
                 # Fetch JSON from URL
                 with urlopen(JSON_URL, timeout=30) as response:
-                    data = json.loads(response.read().decode('utf-8'))
+                    json_data = response.read().decode('utf-8')
 
-                # Apply JSONPath filter
-                jsonpath_expr = parse(JSON_PATH)
-                matches = jsonpath_expr.find(data)
+                # Apply jq filter
+                result = subprocess.run(
+                    ['jq', JSON_FILTER],
+                    input=json_data.encode('utf-8'),
+                    capture_output=True,
+                    timeout=10,
+                    check=True
+                )
                 
-                # Convert matches to parameters
-                parameters = []
-                for match in matches:
-                    # If the match value is a dict, use it directly
-                    if isinstance(match.value, dict):
-                        parameters.append(match.value)
-                    # If it's a primitive value, wrap it in a dict with a generic key
-                    else:
-                        parameters.append({'value': match.value})
+                parameters = json.loads(result.stdout.decode('utf-8'))
+                
+                # Ensure parameters is a list
+                if not isinstance(parameters, list):
+                    parameters = [parameters]
 
                 self.reply({
                     'output': {
                         'parameters': parameters
                     }
                 })
+            except subprocess.CalledProcessError as e:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    'error': f'jq filter error: {e.stderr.decode("utf-8")}'
+                }).encode('UTF-8'))
             except Exception as e:
                 self.send_response(500)
                 self.end_headers()

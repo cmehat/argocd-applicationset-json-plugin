@@ -4,7 +4,11 @@ A generic ArgoCD ApplicationSet plugin that fetches JSON from a URL and applies 
 
 ## Authors
 
+<<<<<<< HEAD
 - cm
+=======
+- Corentin Méhat
+>>>>>>> 798bde1 (Initial commit: Generic JSON ApplicationSet plugin)
 
 ## Features
 
