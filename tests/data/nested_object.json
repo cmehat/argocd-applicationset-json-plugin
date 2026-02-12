@@ -1,0 +1,15 @@
+{
+  "production": {
+    "region": "us-east-1",
+    "instances": 5
+  },
+  "staging": {
+    "region": "us-west-2",
+    "instances": 2
+  },
+  "development": {
+    "region": "eu-west-1",
+    "instances": 1,
+    "temporary": true
+  }
+}
