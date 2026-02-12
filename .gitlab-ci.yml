@@ -1,6 +1,7 @@
 image: docker:latest
 
 stages:
+  - test
   - build
   - release
 
@@ -11,6 +12,27 @@ variables:
 before_script:
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
+# Test Python plugins
+test:
+  stage: test
+  image: python:3.11-slim
+  before_script:
+    - apt-get update && apt-get install -y jq curl
+    - pip install jsonpath-ng
+  only:
+    - merge_requests
+    - main
+  script:
+    - cd tests
+    - ./run_all_tests.sh
+  artifacts:
+    when: always
+    reports:
+      junit: tests/test-results.xml
+    paths:
+      - tests/*.log
+
+# Build and test Docker images
 build:
   stage: build
   services:
@@ -21,19 +43,40 @@ build:
   script:
     - |
       if [ "$CI_COMMIT_BRANCH" == "main" ]; then
-        TAG="latest"
+        TAG_SUFFIX="latest"
       else
-        TAG="mr-${CI_MERGE_REQUEST_IID}"
-      fi
-      
-      echo "Building image: ${IMAGE_NAME}:${TAG}"
-      docker build -t "${IMAGE_NAME}:${TAG}" .
-      
-      if [ "$CI_COMMIT_BRANCH" != "main" ]; then
-        echo "Pushing MR image for testing: ${IMAGE_NAME}:${TAG}"
-        docker push "${IMAGE_NAME}:${TAG}"
+        TAG_SUFFIX="mr-${CI_MERGE_REQUEST_IID}"
       fi
 
+      # Build JSONPath variant (default, recommended)
+      echo "Building JSONPath variant: ${IMAGE_NAME}:${TAG_SUFFIX}"
+      docker build -f Dockerfile -t "${IMAGE_NAME}:${TAG_SUFFIX}" .
+      docker tag "${IMAGE_NAME}:${TAG_SUFFIX}" "${IMAGE_NAME}:jsonpath-${TAG_SUFFIX}"
+
+      # Build jq variant
+      echo "Building jq variant: ${IMAGE_NAME}:jq-${TAG_SUFFIX}"
+      docker build -f Dockerfile.jq -t "${IMAGE_NAME}:jq-${TAG_SUFFIX}" .
+
+      # Build dual variant
+      echo "Building dual variant: ${IMAGE_NAME}:dual-${TAG_SUFFIX}"
+      docker build -f Dockerfile.dual -t "${IMAGE_NAME}:dual-${TAG_SUFFIX}" .
+
+      # Test Docker images
+      echo "Testing Docker images..."
+      apk add --no-cache python3 py3-pip bash curl
+      pip3 install --break-system-packages jsonpath-ng
+      cd tests && ./test_docker.sh "test" "argocd-applicationset-json-plugin" || true
+      cd ..
+
+      if [ "$CI_COMMIT_BRANCH" != "main" ]; then
+        echo "Pushing MR images for testing"
+        docker push "${IMAGE_NAME}:${TAG_SUFFIX}"
+        docker push "${IMAGE_NAME}:jsonpath-${TAG_SUFFIX}"
+        docker push "${IMAGE_NAME}:jq-${TAG_SUFFIX}"
+        docker push "${IMAGE_NAME}:dual-${TAG_SUFFIX}"
+      fi
+
+# Release all three variants on main
 release:
   stage: release
   services:
@@ -42,14 +85,43 @@ release:
     - main
   script:
     - |
-      # Build and tag with commit SHA
-      docker build -t "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}" .
+      # Build JSONPath variant (default)
+      echo "Building JSONPath variant (default)"
+      docker build -f Dockerfile -t "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}" .
       docker tag "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}" "${IMAGE_NAME}:latest"
-      
-      # Push both tags
+      docker tag "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}" "${IMAGE_NAME}:jsonpath-${CI_COMMIT_SHORT_SHA}"
+      docker tag "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}" "${IMAGE_NAME}:jsonpath-latest"
+
+      # Build jq variant
+      echo "Building jq variant"
+      docker build -f Dockerfile.jq -t "${IMAGE_NAME}:jq-${CI_COMMIT_SHORT_SHA}" .
+      docker tag "${IMAGE_NAME}:jq-${CI_COMMIT_SHORT_SHA}" "${IMAGE_NAME}:jq-latest"
+
+      # Build dual variant
+      echo "Building dual variant"
+      docker build -f Dockerfile.dual -t "${IMAGE_NAME}:dual-${CI_COMMIT_SHORT_SHA}" .
+      docker tag "${IMAGE_NAME}:dual-${CI_COMMIT_SHORT_SHA}" "${IMAGE_NAME}:dual-latest"
+
+      # Push all tags
+      echo "Pushing all images"
       docker push "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
       docker push "${IMAGE_NAME}:latest"
-      
+      docker push "${IMAGE_NAME}:jsonpath-${CI_COMMIT_SHORT_SHA}"
+      docker push "${IMAGE_NAME}:jsonpath-latest"
+      docker push "${IMAGE_NAME}:jq-${CI_COMMIT_SHORT_SHA}"
+      docker push "${IMAGE_NAME}:jq-latest"
+      docker push "${IMAGE_NAME}:dual-${CI_COMMIT_SHORT_SHA}"
+      docker push "${IMAGE_NAME}:dual-latest"
+
       echo "Published images:"
-      echo "  - ${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
-      echo "  - ${IMAGE_NAME}:latest"
+      echo "  JSONPath (default, recommended):"
+      echo "    - ${IMAGE_NAME}:latest"
+      echo "    - ${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
+      echo "    - ${IMAGE_NAME}:jsonpath-latest"
+      echo "    - ${IMAGE_NAME}:jsonpath-${CI_COMMIT_SHORT_SHA}"
+      echo "  jq-only:"
+      echo "    - ${IMAGE_NAME}:jq-latest"
+      echo "    - ${IMAGE_NAME}:jq-${CI_COMMIT_SHORT_SHA}"
+      echo "  Dual (jq + JSONPath):"
+      echo "    - ${IMAGE_NAME}:dual-latest"
+      echo "    - ${IMAGE_NAME}:dual-${CI_COMMIT_SHORT_SHA}"

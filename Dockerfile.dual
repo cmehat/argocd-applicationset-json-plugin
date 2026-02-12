@@ -1,0 +1,20 @@
+FROM python:3.11-slim
+
+# Create directories
+WORKDIR /app
+RUN mkdir -p /var/run/argo
+
+# Install jq for dual mode support
+RUN apt-get update && \
+    apt-get install -y jq && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip install --no-cache-dir jsonpath-ng
+
+# Copy dual-mode plugin
+COPY plugin_dual.py plugin.py
+RUN chmod +x plugin.py
+
+EXPOSE 4355
+CMD ["python3", "plugin.py"]

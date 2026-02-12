@@ -1,0 +1,5 @@
+[
+  {"name": "item1", "value": 100},
+  {"name": "item2", "value": 200},
+  {"name": "item3", "value": 300, "skip": true}
+]
