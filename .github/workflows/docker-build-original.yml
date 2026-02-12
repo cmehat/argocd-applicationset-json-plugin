@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    tags:
-      - 'v*.*.*'  # Trigger on version tags like v1.0.0
   pull_request:
     branches:
       - main
@@ -83,27 +81,13 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          flavor: |
-            latest=false
           tags: |
-            # Version tags for releases (e.g., v1.0.0)
-            type=semver,pattern={{version}},enable=${{ matrix.variant.is_default }}
-            type=semver,pattern={{major}}.{{minor}},enable=${{ matrix.variant.is_default }}
-            type=semver,pattern={{major}},enable=${{ matrix.variant.is_default }}
-
-            # Variant-specific version tags
-            type=semver,pattern=${{ matrix.variant.name }}-{{version}}
-            type=semver,pattern=${{ matrix.variant.name }}-{{major}}.{{minor}}
-            type=semver,pattern=${{ matrix.variant.name }}-{{major}}
-
-            # Latest tags for main branch
+            # For default (jsonpath) variant on main branch
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' && matrix.variant.is_default }}
             type=raw,value=${{ github.sha }},enable=${{ github.ref == 'refs/heads/main' && matrix.variant.is_default }}
-
-            # Variant-specific latest tags
+            # Variant-specific tags
             type=raw,value=${{ matrix.variant.name }}-latest,enable=${{ github.ref == 'refs/heads/main' }}
             type=raw,value=${{ matrix.variant.name }}-${{ github.sha }},enable=${{ github.ref == 'refs/heads/main' }}
-
             # PR tags
             type=raw,value=${{ matrix.variant.name }}-pr-${{ github.event.pull_request.number }},enable=${{ github.event_name == 'pull_request' }}
 
@@ -132,7 +116,4 @@ jobs:
           ./test_docker.sh "${{ matrix.variant.name }}-test" "argocd-applicationset-json-plugin"
 
       - name: Image digest
-        run: |
-          echo "Built, tested, and pushed ${{ matrix.variant.name }} variant"
-          echo "Tags:"
-          echo "${{ steps.meta.outputs.tags }}"
+        run: echo "Built, tested, and pushed ${{ matrix.variant.name }} variant"
