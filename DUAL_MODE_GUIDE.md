@@ -8,7 +8,7 @@ The `plugin_dual.py` supports both **jq** (powerful transformations) and **JSONP
 - ✅ You need complex transformations (`to_entries`, `map`, etc.)
 - ✅ You need to access object keys as values
 - ✅ You need advanced filtering with custom logic
-- ❌ Requires jq to be installed in the container
+- ❌ Requires jq to be installed
 
 **Use JSONPath when:**
 - ✅ You want pure Python (no external dependencies)
@@ -128,7 +128,7 @@ data:
 
 ## Migration Guide
 
-### From plugin_jq.py (jq-only)
+### From plugin_original.py (jq-only)
 
 No changes needed! Just replace the plugin file:
 
