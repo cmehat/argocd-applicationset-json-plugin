@@ -1,4 +1,8 @@
-image: docker:latest
+default:
+  tags:
+    - gcp
+
+image: docker:27
 
 stages:
   - test
@@ -6,10 +10,19 @@ stages:
   - release
 
 variables:
+  DOCKER_VERSION: "27"
   DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: "tcp://docker:2375"
   IMAGE_NAME: "${CI_REGISTRY_IMAGE}"
 
 before_script:
+  - |
+    echo "Waiting for Docker daemon..."
+    for i in $(seq 1 30); do
+      docker info >/dev/null 2>&1 && break
+      sleep 1
+    done
+    docker info >/dev/null 2>&1 || { echo "Docker daemon not available"; exit 1; }
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
 # Test Python plugins
@@ -37,7 +50,7 @@ test:
 build:
   stage: build
   services:
-    - docker:dind
+    - docker:${DOCKER_VERSION}-dind
   only:
     - merge_requests
     - main
@@ -81,7 +94,7 @@ build:
 release:
   stage: release
   services:
-    - docker:dind
+    - docker:${DOCKER_VERSION}-dind
   only:
     - main
   script:
@@ -131,7 +144,7 @@ release:
 release-version:
   stage: release
   services:
-    - docker:dind
+    - docker:${DOCKER_VERSION}-dind
   only:
     - tags
   except:
