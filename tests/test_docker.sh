@@ -40,6 +40,11 @@ test_docker_image() {
         "${env_args[@]}" \
         "$image")
 
+    # Diagnostic: print the env vars the plugin will see. Helpful when a
+    # docker-side env-var quoting bug masquerades as a plugin filter bug.
+    echo "  Container env:"
+    docker inspect --format '{{range .Config.Env}}    {{println .}}{{end}}' "$container_id" 2>/dev/null | grep -E '^    (JSON_|PATH|HOME)' || true
+
     # shellcheck disable=SC2329  # invoked via trap, not directly
     cleanup() {
         docker stop "$container_id" >/dev/null 2>&1 || true
