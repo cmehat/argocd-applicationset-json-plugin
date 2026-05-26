@@ -53,6 +53,7 @@ jobs:
       packages: write
 
     strategy:
+      fail-fast: false  # let all variants report independently
       matrix:
         variant:
           - name: jsonpath
@@ -122,15 +123,25 @@ jobs:
 
       - name: Test Docker image
         run: |
-          # Tag image for local testing
-          docker tag $(echo "${{ steps.meta.outputs.tags }}" | head -n1) argocd-applicationset-json-plugin:${{ matrix.variant.name }}-test
+          # test_docker.sh looks for images named:
+          #   <base>:<tag>           -> JSONPath variant
+          #   <base>:jq-<tag>        -> jq variant
+          #   <base>:dual-<tag>      -> dual variant
+          # so we tag the built image accordingly for the current matrix entry.
+          case "${{ matrix.variant.name }}" in
+            jsonpath) LOCAL_TAG=test ;;
+            jq)       LOCAL_TAG=jq-test ;;
+            dual)     LOCAL_TAG=dual-test ;;
+            *) echo "unknown variant"; exit 1 ;;
+          esac
+          docker tag "$(echo "${{ steps.meta.outputs.tags }}" | head -n1)" "argocd-applicationset-json-plugin:$LOCAL_TAG"
 
           # Install test dependencies
           pip install jsonpath-ng
 
           # Run Docker tests for this variant
           cd tests
-          ./test_docker.sh "${{ matrix.variant.name }}-test" "argocd-applicationset-json-plugin"
+          ./test_docker.sh "test" "argocd-applicationset-json-plugin"
 
       - name: Image digest
         run: |
