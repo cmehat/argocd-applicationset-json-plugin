@@ -242,7 +242,7 @@ pre-commit run --all-files
 
 ## Deployment
 
-A Helm chart for this plugin is maintained out-of-tree.
+A Helm chart for this plugin lives at [cmehat/argocd-applicationset-json-plugin-chart](https://github.com/cmehat/argocd-applicationset-json-plugin-chart). It packages the plugin as an ArgoCD `ApplicationSet` plugin generator (Deployment + Service + ConfigMap + Secret) and ships an end-to-end example you can apply against any ArgoCD ≥ 2.3 install.
 
 ## License
 
