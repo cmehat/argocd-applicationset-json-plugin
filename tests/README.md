@@ -4,7 +4,7 @@ This directory contains the test suite for all plugin variants.
 
 ## Test Data
 
-- `data/teztnets.json` - Real snapshot of teztnets.com data
+- `data/networks.json` - Object-of-objects fixture with one entry containing an `aliasOf` field (exercises key extraction + filtering)
 - `data/simple_array.json` - Simple array for basic tests
 - `data/nested_object.json` - Nested object for key extraction tests
 
@@ -110,7 +110,7 @@ Example output:
 Testing JSONPath Plugin (plugin.py)
 ==========================================
 
-Test: Teztnets - Extract keys, exclude aliases
+Test: Networks - Extract keys, exclude aliases
   JSON_PATH: $.*
   ✓ PASSED: Got 5 items (expected 5)
 
@@ -160,10 +160,10 @@ pkill -f "python.*plugin.py"
 Make sure to use absolute paths:
 ```bash
 # Good
-JSON_URL="file://$(pwd)/data/teztnets.json"
+JSON_URL="file://$(pwd)/data/networks.json"
 
 # Bad
-JSON_URL="file://data/teztnets.json"
+JSON_URL="file://data/networks.json"
 ```
 
 ### jq Tests Failing

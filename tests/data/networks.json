@@ -1,0 +1,52 @@
+{
+  "alpha": {
+    "category": "Long-running",
+    "human_name": "Alpha",
+    "endpoints": {
+      "api": "https://api.alpha.example.com",
+      "metrics": "https://metrics.alpha.example.com"
+    },
+    "activated_on": "2024-01-15"
+  },
+  "beta": {
+    "category": "Long-running",
+    "human_name": "Beta",
+    "endpoints": {
+      "api": "https://api.beta.example.com",
+      "metrics": "https://metrics.beta.example.com"
+    },
+    "activated_on": "2024-03-22"
+  },
+  "gamma-staging": {
+    "aliasOf": "gamma",
+    "category": "Aliases",
+    "human_name": "Gamma (staging alias)"
+  },
+  "gamma": {
+    "category": "Periodic",
+    "human_name": "Gamma",
+    "endpoints": {
+      "api": "https://api.gamma.example.com",
+      "metrics": "https://metrics.gamma.example.com"
+    },
+    "activated_on": "2025-02-04"
+  },
+  "delta": {
+    "category": "Long-running",
+    "human_name": "Delta",
+    "endpoints": {
+      "api": "https://api.delta.example.com",
+      "metrics": "https://metrics.delta.example.com"
+    },
+    "activated_on": "2025-08-07"
+  },
+  "epsilon": {
+    "category": "Periodic",
+    "human_name": "Epsilon",
+    "endpoints": {
+      "api": "https://api.epsilon.example.com",
+      "metrics": "https://metrics.epsilon.example.com"
+    },
+    "activated_on": "2025-11-18"
+  }
+}

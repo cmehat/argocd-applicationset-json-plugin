@@ -186,20 +186,20 @@ docker pull ghcr.io/OWNER/REPO:dual-latest         # Both
 
 ## 🎯 Quick Start Examples
 
-### JSONPath Variant (Teztnets)
+### JSONPath Variant
 ```bash
 docker run -p 4355:4355 \
-  -e JSON_URL=https://teztnets.com/teztnets.json \
+  -e JSON_URL=https://example.com/networks.json \
   -e JSON_PATH='$.*' \
   -e JSON_PATH_KEYS_ONLY=true \
   -e JSON_PATH_EXCLUDE_IF_EXISTS=aliasOf \
   <registry>:latest
 ```
 
-### jq Variant (Teztnets)
+### jq Variant
 ```bash
 docker run -p 4355:4355 \
-  -e JSON_URL=https://teztnets.com/teztnets.json \
+  -e JSON_URL=https://example.com/networks.json \
   -e JSON_FILTER='to_entries | map(select(.value.aliasOf == null) | {name: .key})' \
   <registry>:jq-latest
 ```
@@ -208,14 +208,14 @@ docker run -p 4355:4355 \
 ```bash
 # Use JSONPath
 docker run -p 4355:4355 \
-  -e JSON_URL=https://teztnets.com/teztnets.json \
+  -e JSON_URL=https://example.com/networks.json \
   -e JSON_PATH='$.*' \
   -e JSON_PATH_KEYS_ONLY=true \
   <registry>:dual-latest
 
 # Or use jq (same image!)
 docker run -p 4355:4355 \
-  -e JSON_URL=https://teztnets.com/teztnets.json \
+  -e JSON_URL=https://example.com/networks.json \
   -e JSON_FILTER='to_entries | map(...)' \
   <registry>:dual-latest
 ```

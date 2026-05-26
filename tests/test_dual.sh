@@ -96,9 +96,9 @@ echo "=========================================="
 
 # JSONPath Tests
 run_test \
-    "Teztnets - JSONPath with key extraction" \
+    "Networks - JSONPath with key extraction" \
     "jsonpath" \
-    "file://$(pwd)/data/teztnets.json" \
+    "file://$(pwd)/data/networks.json" \
     '$.*' \
     5 \
     'true' \
@@ -127,9 +127,9 @@ if [ "$SKIP_JQ" = false ]; then
 
     # jq Tests
     run_test \
-        "Teztnets - jq filter" \
+        "Networks - jq filter" \
         "jq" \
-        "file://$(pwd)/data/teztnets.json" \
+        "file://$(pwd)/data/networks.json" \
         'to_entries | map(select(.value.aliasOf == null) | {name: .key})' \
         5
 

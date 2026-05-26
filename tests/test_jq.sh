@@ -76,10 +76,10 @@ run_test() {
 # Change to tests directory
 cd "$(dirname "$0")"
 
-# Test 1: Teztnets with jq filter
+# Test 1: Networks with jq filter
 run_test \
-    "Teztnets - jq filter to extract non-alias networks" \
-    "file://$(pwd)/data/teztnets.json" \
+    "Networks - jq filter to extract non-alias entries" \
+    "file://$(pwd)/data/networks.json" \
     'to_entries | map(select(.value.aliasOf == null) | {name: .key})' \
     5
 

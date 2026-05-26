@@ -180,7 +180,7 @@ docker pull <registry>:dual-latest
 docker pull <registry>:jsonpath-latest
 
 docker run -p 4355:4355 \
-  -e JSON_URL=https://teztnets.com/teztnets.json \
+  -e JSON_URL=https://example.com/networks.json \
   -e JSON_PATH='$.*' \
   -e JSON_PATH_KEYS_ONLY=true \
   -e JSON_PATH_EXCLUDE_IF_EXISTS=aliasOf \
@@ -192,7 +192,7 @@ docker run -p 4355:4355 \
 docker pull <registry>:jq-latest
 
 docker run -p 4355:4355 \
-  -e JSON_URL=https://teztnets.com/teztnets.json \
+  -e JSON_URL=https://example.com/networks.json \
   -e JSON_FILTER='to_entries | map(select(.value.aliasOf == null) | {name: .key})' \
   <registry>:jq-latest
 ```
@@ -203,7 +203,7 @@ docker pull <registry>:dual-latest
 
 # Use JSONPath mode
 docker run -p 4355:4355 \
-  -e JSON_URL=https://teztnets.com/teztnets.json \
+  -e JSON_URL=https://example.com/networks.json \
   -e JSON_PATH='$.*' \
   -e JSON_PATH_KEYS_ONLY=true \
   -e JSON_PATH_EXCLUDE_IF_EXISTS=aliasOf \
@@ -211,7 +211,7 @@ docker run -p 4355:4355 \
 
 # Or use jq mode
 docker run -p 4355:4355 \
-  -e JSON_URL=https://teztnets.com/teztnets.json \
+  -e JSON_URL=https://example.com/networks.json \
   -e JSON_FILTER='to_entries | map(select(.value.aliasOf == null) | {name: .key})' \
   <registry>:dual-latest
 ```

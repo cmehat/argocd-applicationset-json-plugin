@@ -7,7 +7,7 @@ Complete testing infrastructure for all three plugin variants with CI/CD integra
 ```
 tests/
 ├── data/
-│   ├── teztnets.json          # Real teztnets.com snapshot
+│   ├── networks.json          # Object-of-objects fixture with one `aliasOf` entry
 │   ├── simple_array.json      # Simple array test data
 │   └── nested_object.json     # Nested object test data
 ├── test_jsonpath.sh           # Tests for plugin.py (JSONPath)
@@ -23,32 +23,32 @@ tests/
 ### Python Plugin Tests
 
 #### test_jsonpath.sh
-- ✅ Teztnets key extraction with filtering (5 items expected)
+- ✅ Networks key extraction with filtering (5 items expected)
 - ✅ Simple array query (3 items)
 - ✅ Simple array with field-based filtering (2 items)
 - ✅ Nested object key extraction (3 items)
 - ✅ Nested object with exclusion filter (2 items)
 
 #### test_jq.sh
-- ✅ Teztnets jq transformation (5 items)
+- ✅ Networks jq transformation (5 items)
 - ✅ Array mapping (3 items)
 - ✅ Array filtering with jq select (2 items)
 - ✅ Object to_entries conversion (3 items)
 - ✅ Complex jq filtering (2 items)
 
 #### test_dual.sh
-- ✅ JSONPath mode: Teztnets (5 items)
+- ✅ JSONPath mode: Networks (5 items)
 - ✅ JSONPath mode: Simple array (3 items)
 - ✅ JSONPath mode: Nested object (3 items)
-- ✅ jq mode: Teztnets (5 items)
+- ✅ jq mode: Networks (5 items)
 - ✅ jq mode: Array transform (3 items)
 - ✅ jq mode: to_entries (3 items)
 
 ### Docker Image Tests
 
 #### test_docker.sh
-- ✅ JSONPath variant with Teztnets
-- ✅ jq variant with Teztnets
+- ✅ JSONPath variant with Networks fixture
+- ✅ jq variant with Networks fixture
 - ✅ Dual variant in JSONPath mode
 - ✅ Dual variant in jq mode
 
@@ -164,7 +164,7 @@ matrix:
 Testing JSONPath Plugin (plugin.py)
 ==========================================
 
-Test: Teztnets - Extract keys, exclude aliases
+Test: Networks - Extract keys, exclude aliases
   JSON_PATH: $.*
   ✓ PASSED: Got 5 items (expected 5)
 
@@ -194,11 +194,9 @@ Failed: 0
 
 ## 🧩 Test Data Files
 
-### teztnets.json
-Real snapshot from teztnets.com containing:
-- Network definitions with keys as network names
-- Some networks have `aliasOf` field (should be filtered)
-- Tests key extraction and filtering
+### networks.json
+Object-of-objects fixture with 6 top-level entries (one has an `aliasOf` field).
+Exercises key extraction and field-based filtering (5 results expected after exclusion).
 
 ### simple_array.json
 ```json
@@ -226,7 +224,7 @@ Tests:
 
 ## 🎯 Test Philosophy
 
-1. **Real Data** - Use actual teztnets.json for realistic testing
+1. **Realistic Shape** - Fixtures mirror real-world JSON structures (arrays, nested objects, alias entries)
 2. **Multiple Scenarios** - Cover arrays, objects, filtering, transformations
 3. **Both Modes** - Test JSONPath and jq separately and in dual mode
 4. **End-to-End** - Test both Python scripts and Docker containers

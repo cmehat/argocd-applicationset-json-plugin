@@ -49,10 +49,10 @@ env:
 
 ## Examples
 
-### Example 1: jq Mode - Teztnets Networks
+### Example 1: jq Mode - Extract Object Keys, Skip Aliases
 
 ```bash
-export JSON_URL='https://teztnets.com/teztnets.json'
+export JSON_URL='https://example.com/networks.json'
 export JSON_FILTER='to_entries | map(select(.value.aliasOf == null) | {name: .key})'
 ./plugin_dual.py
 ```
@@ -60,18 +60,18 @@ export JSON_FILTER='to_entries | map(select(.value.aliasOf == null) | {name: .ke
 **Output:**
 ```json
 [
-  {"name": "ghostnet"},
-  {"name": "mainnet"},
-  {"name": "shadownet"},
-  {"name": "tallinnnet"},
-  {"name": "weeklynet-2026-02-04"}
+  {"name": "alpha"},
+  {"name": "beta"},
+  {"name": "gamma"},
+  {"name": "delta"},
+  {"name": "epsilon"}
 ]
 ```
 
 ### Example 2: JSONPath Mode - Same Result
 
 ```bash
-export JSON_URL='https://teztnets.com/teztnets.json'
+export JSON_URL='https://example.com/networks.json'
 export JSON_PATH='$.*'
 export JSON_PATH_KEYS_ONLY='true'
 export JSON_PATH_EXCLUDE_IF_EXISTS='aliasOf'
@@ -106,7 +106,7 @@ kind: ConfigMap
 metadata:
   name: json-plugin-config
 data:
-  JSON_URL: "https://teztnets.com/teztnets.json"
+  JSON_URL: "https://example.com/networks.json"
   JSON_FILTER: 'to_entries | map(select(.value.aliasOf == null) | {name: .key})'
   JSON_FILTER_TYPE: "jq"  # Explicit
 ```
@@ -119,7 +119,7 @@ kind: ConfigMap
 metadata:
   name: json-plugin-config
 data:
-  JSON_URL: "https://teztnets.com/teztnets.json"
+  JSON_URL: "https://example.com/networks.json"
   JSON_PATH: "$.*"
   JSON_PATH_KEYS_ONLY: "true"
   JSON_PATH_EXCLUDE_IF_EXISTS: "aliasOf"

@@ -12,8 +12,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://gitlab.com/tezos-infra/iac/argocd-applicationset-json-plugin"
-Repository = "https://gitlab.com/tezos-infra/iac/argocd-applicationset-json-plugin"
+Homepage = "https://github.com/cmehat/argocd-applicationset-json-plugin"
+Repository = "https://github.com/cmehat/argocd-applicationset-json-plugin"
 
 [tool.black]
 line-length = 120

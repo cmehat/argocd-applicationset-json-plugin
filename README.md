@@ -162,14 +162,14 @@ See [tests/README.md](tests/README.md) for detailed testing documentation.
 
 ## Example Use Cases
 
-### Teztnets Networks (Extract Keys with Filtering)
+### Object-of-Objects (Extract Keys with Filtering)
 
-Get network names, excluding aliases:
+Extract top-level keys of an object, excluding entries that are aliases of others:
 
 ```yaml
 env:
   - name: JSON_URL
-    value: "https://teztnets.com/teztnets.json"
+    value: "https://example.com/networks.json"
   - name: JSON_PATH
     value: "$.*"
   - name: JSON_PATH_KEYS_ONLY
@@ -178,14 +178,26 @@ env:
     value: "aliasOf"
 ```
 
+Given input:
+```json
+{
+  "alpha":         { "category": "primary" },
+  "beta":          { "category": "primary" },
+  "gamma-staging": { "aliasOf": "gamma" },
+  "gamma":         { "category": "primary" },
+  "delta":         { "category": "primary" },
+  "epsilon":       { "category": "primary" }
+}
+```
+
 **Result:**
 ```json
 [
-  {"name": "ghostnet"},
-  {"name": "mainnet"},
-  {"name": "shadownet"},
-  {"name": "tallinnnet"},
-  {"name": "weeklynet-2026-02-04"}
+  {"name": "alpha"},
+  {"name": "beta"},
+  {"name": "gamma"},
+  {"name": "delta"},
+  {"name": "epsilon"}
 ]
 ```
 
@@ -230,7 +242,7 @@ pre-commit run --all-files
 
 ## Deployment
 
-Use the Helm chart available at `charts/argocd-applicationset-plugin-teztnets` to deploy this plugin to your Kubernetes cluster.
+A Helm chart for this plugin is maintained out-of-tree.
 
 ## License
 

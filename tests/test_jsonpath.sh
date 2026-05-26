@@ -73,10 +73,10 @@ run_test() {
 # Change to tests directory
 cd "$(dirname "$0")"
 
-# Test 1: Teztnets with key extraction and filtering
+# Test 1: Networks with key extraction and filtering
 run_test \
-    "Teztnets - Extract keys, exclude aliases" \
-    "file://$(pwd)/data/teztnets.json" \
+    "Networks - Extract keys, exclude aliases" \
+    "file://$(pwd)/data/networks.json" \
     '$.*' \
     'true' \
     'aliasOf' \

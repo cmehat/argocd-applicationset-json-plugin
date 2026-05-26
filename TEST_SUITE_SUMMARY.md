@@ -5,7 +5,7 @@
 ### 📦 Test Data Repository
 ```
 tests/data/
-├── teztnets.json         # Real snapshot from teztnets.com (6.2KB)
+├── networks.json         # Object-of-objects fixture with one `aliasOf` entry
 ├── simple_array.json     # Array test cases
 └── nested_object.json    # Object key extraction tests
 ```
@@ -190,7 +190,7 @@ All test suites passed! ✓
 ```
 tests/
 ├── data/
-│   ├── teztnets.json
+│   ├── networks.json
 │   ├── simple_array.json
 │   └── nested_object.json
 ├── test_jsonpath.sh
@@ -268,7 +268,7 @@ You now have:
 - ✅ Complete test suite for all variants
 - ✅ 19 automated test cases
 - ✅ CI/CD integration (GitLab + GitHub)
-- ✅ Real-world test data from teztnets.com
+- ✅ Realistic test fixtures (arrays, nested objects, alias entries)
 - ✅ Docker image testing
 - ✅ Comprehensive documentation
 - ✅ Quality gates on all changes

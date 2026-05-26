@@ -10,9 +10,9 @@
 
 ## Recommendation by Use Case
 
-### Use Case: Teztnets Networks (Your Case)
+### Use Case: Object-of-Objects, Extract Keys, Exclude Aliases
 
-**Goal:** Get network names, exclude aliases
+**Goal:** Extract top-level keys, skip entries with an `aliasOf` field.
 
 **Option 1: JSONPath** ⭐ Recommended
 ```bash
@@ -126,18 +126,17 @@ JSON_FILTER='to_entries | map(select(.value.aliasOf == null) | {name: .key})'
 
 ---
 
-## My Recommendation for You
+## Recommended Path
 
-Based on your Teztnets use case:
+For an object-of-objects source where you want top-level keys with one field-based exclusion:
 
 ### Short-term: Use `plugin.py` ✅
-- You've already implemented key extraction
-- Works perfectly for your use case
+- Key extraction already implemented
 - Simpler to maintain
 - Faster performance
 
 ### Long-term: Migrate to `plugin_dual.py` 🚀
-- Keeps your current functionality
+- Keeps current functionality
 - Adds flexibility for future use cases
 - Easy to add jq later if needed
 - Team can use preferred syntax
@@ -146,7 +145,6 @@ Based on your Teztnets use case:
 
 1. **Now:** Keep using `plugin.py`
    ```bash
-   # Works perfectly for teztnets
    JSON_PATH='$.*'
    JSON_PATH_KEYS_ONLY='true'
    JSON_PATH_EXCLUDE_IF_EXISTS='aliasOf'
@@ -181,7 +179,7 @@ Based on your Teztnets use case:
 
 ## Summary
 
-**For your specific case (Teztnets):**
+**For the object-of-objects key-extraction case:**
 - ✅ **Use `plugin.py`** with JSONPath (current implementation)
 - Keep `plugin_dual.py` as future option
 - Keep `plugin_jq.py` for reference

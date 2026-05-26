@@ -84,7 +84,7 @@ if docker image inspect "${IMAGE_BASE}:${IMAGE_TAG}" > /dev/null 2>&1; then
         "JSONPath" \
         "${IMAGE_BASE}:${IMAGE_TAG}" \
         "JSONPath" \
-        "-e JSON_URL=file:///data/teztnets.json -e JSON_PATH='\$.*' -e JSON_PATH_KEYS_ONLY=true -e JSON_PATH_EXCLUDE_IF_EXISTS=aliasOf" \
+        "-e JSON_URL=file:///data/networks.json -e JSON_PATH='\$.*' -e JSON_PATH_KEYS_ONLY=true -e JSON_PATH_EXCLUDE_IF_EXISTS=aliasOf" \
         5
 else
     echo -e "${YELLOW}Skipping JSONPath variant: image not found${NC}"
@@ -96,7 +96,7 @@ if docker image inspect "${IMAGE_BASE}:jq-${IMAGE_TAG}" > /dev/null 2>&1; then
         "jq" \
         "${IMAGE_BASE}:jq-${IMAGE_TAG}" \
         "jq" \
-        "-e JSON_URL=file:///data/teztnets.json -e JSON_FILTER='to_entries | map(select(.value.aliasOf == null) | {name: .key})'" \
+        "-e JSON_URL=file:///data/networks.json -e JSON_FILTER='to_entries | map(select(.value.aliasOf == null) | {name: .key})'" \
         5
 else
     echo -e "${YELLOW}Skipping jq variant: image not found${NC}"
@@ -108,7 +108,7 @@ if docker image inspect "${IMAGE_BASE}:dual-${IMAGE_TAG}" > /dev/null 2>&1; then
         "Dual (JSONPath mode)" \
         "${IMAGE_BASE}:dual-${IMAGE_TAG}" \
         "JSONPath" \
-        "-e JSON_URL=file:///data/teztnets.json -e JSON_PATH='\$.*' -e JSON_PATH_KEYS_ONLY=true -e JSON_PATH_EXCLUDE_IF_EXISTS=aliasOf" \
+        "-e JSON_URL=file:///data/networks.json -e JSON_PATH='\$.*' -e JSON_PATH_KEYS_ONLY=true -e JSON_PATH_EXCLUDE_IF_EXISTS=aliasOf" \
         5
 
     # Test dual variant - jq mode
@@ -116,7 +116,7 @@ if docker image inspect "${IMAGE_BASE}:dual-${IMAGE_TAG}" > /dev/null 2>&1; then
         "Dual (jq mode)" \
         "${IMAGE_BASE}:dual-${IMAGE_TAG}" \
         "jq" \
-        "-e JSON_URL=file:///data/teztnets.json -e JSON_FILTER='to_entries | map(select(.value.aliasOf == null) | {name: .key})'" \
+        "-e JSON_URL=file:///data/networks.json -e JSON_FILTER='to_entries | map(select(.value.aliasOf == null) | {name: .key})'" \
         5
 else
     echo -e "${YELLOW}Skipping dual variant: image not found${NC}"
